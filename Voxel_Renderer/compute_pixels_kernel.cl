@@ -273,12 +273,13 @@ __kernel void compute_pixels_kernel(__global int4 *map, __global int4 *doutput,
         break;
         }
     }
-
+    
     if (!xFound && !yFound && !zFound) {
         doutput[index] = (int4){0, 0, 0, 0};
     }
-
+    else{
     doutput[index] = (int4){LimitColor(minVoxel.x - minDist * 3 - minShade),
             LimitColor(minVoxel.y - minDist * 3 - minShade),
             LimitColor(minVoxel.z - minDist * 3 - minShade), 255};
+    }
 }
