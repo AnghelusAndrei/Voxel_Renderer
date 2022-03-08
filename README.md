@@ -1,5 +1,5 @@
 # Voxel_Renderer
-##3D voxel raytracing engine on the GPU using OpenCL for parallel pixel computation (raycasting on a grid)
+## 3D voxel raytracing engine on the GPU using OpenCL for parallel pixel computation (raycasting on a grid)
 
 ### TO do:
   - Chunks/SVO
