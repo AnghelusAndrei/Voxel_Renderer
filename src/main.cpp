@@ -1,6 +1,6 @@
-#include "SDL/SDL.h"
-#include "SDL/SDL_mutex.h"
-#include "SDL_ttf/SDL_ttf.h"
+#include "SDL.h"
+#include "SDL_mutex.h"
+#include "SDL_ttf.h"
 #include <bits/stdc++.h>
 
 #include "Cl_utils.h"

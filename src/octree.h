@@ -1,5 +1,5 @@
 #pragma once
-#include "PerlinNoise/PerlinNoise.hpp"
+#include "PerlinNoise.hpp"
 #include <iostream>
 #ifdef __APPLE__
 #include <OpenCL/opencl.h>

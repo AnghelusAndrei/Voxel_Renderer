@@ -1,5 +1,5 @@
 #pragma once
-#include "SDL2/SDL.h"
+#include "SDL.h"
 #include <bits/stdc++.h>
 #include "debug.h"
 #include "math.h"

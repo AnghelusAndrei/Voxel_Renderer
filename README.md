@@ -13,3 +13,15 @@
 * SDL2
 * OpenCL
 * SDL_ttf
+
+### Building
+```
+git clone --recursive https://github.com/https://github.com/MegaSomething/Voxel_Renderer.git
+cd Voxel_Renderer
+
+mkdir build
+cd build
+
+cmake ..
+cmake --build .
+```
