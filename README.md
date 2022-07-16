@@ -3,7 +3,9 @@
 
 ### TO do:
   - Loading from files
-  - Lighting
+  - Fixing bugs
+  - Delta frames
+  - SVO compression
 
 ![alt text](https://cdn.discordapp.com/attachments/912320676269015040/950796442446991440/unknown.png)
 

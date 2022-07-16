@@ -1,12 +1,10 @@
-#include "SDL2/SDL.h"
-#include "SDL2/SDL_image.h"
-#include "SDL2/SDL_mutex.h"
-#include "SDL2/SDL_ttf.h"
+#include "SDL/SDL.h"
+#include "SDL/SDL_mutex.h"
+#include "SDL_ttf/SDL_ttf.h"
 #include <bits/stdc++.h>
-#include <strstream>
 
-#include "../utils/Cl_utils.h"
-#include "./Input.h"
+#include "Cl_utils.h"
+#include "Input.h"
 #include "debug.h"
 #include "procedural_generation.h"
 #include "renderer.h"

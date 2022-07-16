@@ -1,6 +1,6 @@
 #pragma once
 #include <bits/stdc++.h>
-#include "../src/octree.h"
+#include "octree.h"
 
 #ifdef __APPLE__
 #include <OpenCL/opencl.h>

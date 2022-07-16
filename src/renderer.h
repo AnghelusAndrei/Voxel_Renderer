@@ -5,8 +5,8 @@
 #include "SDL2/SDL_ttf.h"
 #include <bits/stdc++.h>
 #include <strstream>
-#include "../utils/Cl_utils.h"
-#include "./Input.h"
+#include "Cl_utils.h"
+#include "Input.h"
 #include "procedural_generation.h"
 
 #ifdef __APPLE__

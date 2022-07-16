@@ -1,9 +1,9 @@
 #pragma once
 #include "SDL2/SDL.h"
 #include <bits/stdc++.h>
-#include "../src/debug.h"
+#include "debug.h"
 #include "math.h"
-#include "../utils/vector.hpp"
+#include "vector.hpp"
 
 #define degToRad(angleInDegrees) ((angleInDegrees) * M_PI / 180.0)
 #define radToDeg(angleInRadians) ((angleInRadians) * 180.0 / M_PI)

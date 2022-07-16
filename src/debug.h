@@ -1,5 +1,5 @@
 #pragma once
-#include "../utils/PerlinNoise.hpp"
+#include "PerlinNoise.hpp"
 
 
 class Debug{
