@@ -32,6 +32,8 @@ Octree octree;
 Debug console;
 CameraHandler Camera;
 
+Vector light;
+
 
 
 
@@ -52,7 +54,7 @@ static int RenderEngine(void *data){
     cl_program program;
     cl_kernel kernel;
     cl_command_queue queue;
-    cl_int err,g_mem=octree.n;
+    cl_int err,n_mem=octree.n;
     size_t global_size[3] = {res_x, res_y, 0};
 
     cl_mem ddata, doutput;
@@ -72,11 +74,14 @@ static int RenderEngine(void *data){
     kernel = clCreateKernel(program, KERNEL_FUNC, &err);
 
     cl_int2 res = {res_x,res_y};
+    cl_float3 light_cl = light.CL();
 
     err = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&ddata); CheckErr(err);// <=====INPUT
     err = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&doutput); CheckErr(err);// <=====OUTPUT
-    err = clSetKernelArg(kernel, 2, sizeof(cl_int), (void *)&g_mem); CheckErr(err);
+    err = clSetKernelArg(kernel, 2, sizeof(cl_int), (void *)&n_mem); CheckErr(err);
     err = clSetKernelArg(kernel, 3, sizeof(cl_int), (void *)&FOV); CheckErr(err);
+    err = clSetKernelArg(kernel, 6, sizeof(cl_float3), (void *)&light_cl); CheckErr(err);
+    err = clSetKernelArg(kernel, 7, sizeof(cl_int), (void *)&console.config.depth); CheckErr(err);
 
     TTF_Init();
     TTF_Font * font = TTF_OpenFont(FONT_FILE, 50);
@@ -99,7 +104,6 @@ static int RenderEngine(void *data){
 
         err = clSetKernelArg(kernel, 4, sizeof(cl_float3), (void *)&pos); CheckErr(err);
         err = clSetKernelArg(kernel, 5, sizeof(cl_float3), (void *)&vec); CheckErr(err);
-        err = clSetKernelArg(kernel, 6, sizeof(cl_int), (void *)&console.depth); CheckErr(err);
         
 
         //rendering

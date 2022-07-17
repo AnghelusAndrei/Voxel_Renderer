@@ -65,8 +65,8 @@ class CameraHandler{
 
 
     public:
-        const float PLAYER_SPEED_CONST= 0.00004;
-        float PLAYER_SPEED = 0.000004;
+        const float PLAYER_SPEED_CONST= 0.00003;
+        float PLAYER_SPEED = 0.000003;
         float sensitivity = 0.7;
         cam Camera;
         SDL_Event e;

@@ -21,9 +21,8 @@ float vec3Distance(float3 vec1, float3 vec2) {
 
 
 bool inBounds(float3 v, float n, float b) {
-  return v.x > b && v.x <= n && v.y > b && v.y <= n && v.z > b &&
-         v.z <= n;}
-
+  return 0<=v.x&&v.x<=n &&0<=v.y&&v.y<=n&&0<=v.z&&v.z<n;
+}
 
 uchar3 Gradient(uchar3 c1, uchar3 c2, int q){
   return (uchar3){
@@ -38,3 +37,19 @@ int semn(float x){
   else return -1;
 }
 
+uchar3 Color(float3 u){
+  uchar3 v;
+  if(u.x<0)v.x = 0;
+  else if(u.x>255)v.x = 255;
+  else v.x = (uchar)u.x;
+
+  if(u.y<0)v.y = 0;
+  else if(u.y>255)v.y = 255;
+  else v.y = (uchar)u.y;
+
+  if(u.z<0)v.z = 0;
+  else if(u.z>255)v.z = 255;
+  else v.z = (uchar)u.z;
+
+  return v;
+}

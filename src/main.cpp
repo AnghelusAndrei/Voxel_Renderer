@@ -2,6 +2,7 @@
 #include "SDL_mutex.h"
 #include "SDL_ttf.h"
 #include <bits/stdc++.h>
+#include <strstream>
 
 #include "Cl_utils.h"
 #include "Input.h"
@@ -14,16 +15,15 @@
 
 int main()
 {
-    
-    console.GetData();
+    console.GetData2D();
     console.StartTime();
 
-    octree.Initialize(console.depth);
-    GenerateOctree(octree,console.seed,console.density,console.octaves);
+    octree.Initialize(console.config.depth);
+    GenerateOctree2D(octree, console.config);
 
     console.ShowMs();
 
-    
+    light = Vector(octree.n/2, octree.n/2, octree.n/2);
 
     SDL_AtomicSet(&running, 1);
     SDL_Thread *RenderingThread;

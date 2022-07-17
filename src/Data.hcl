@@ -15,28 +15,28 @@ struct leaf_data{
 }; 
 
 int Locate(uint3 pos, int depth, int n, int p2){
-    int a=n/p2;
-    int b=n/(p2*2);
+    float a=n/p2;
+    float b=n/(p2*2);
 
-    return (pos.x%a)/b + 
-        2*((pos.y%a)/b)+
-        4*((pos.z%a)/b);
+    return (int)((pos.x - floor(pos.x/a)*a)/b) + 
+        2*(int)((pos.y - floor(pos.y/a)*a)/b)+
+        4*(int)((pos.z - floor(pos.z/a)*a)/b);
 }
 
 
-leaf_data Lookup(float3 pos, uint4 octree[], int m){
+leaf_data Lookup(uint3 pos, uint4 octree[], int m){
     int d=1;
     int offset = 0;
     int p2=1;
     while(d<=depth){
-        int i = offset+Locate((uint3){(uint)pos.x,(uint)pos.y,(uint)pos.z},d,m,p2);
+        int i = offset+Locate(pos,d,m,p2);
         int s = m/(p2*2);
 
         switch (octree[i].w)
         {
         case LEAF:
             return (leaf_data){
-                (float3){floor(pos.x/s)*s,floor(pos.y/s)*s,floor(pos.z/s)*s},
+                (float3){(pos.x/s)*s,(pos.y/s)*s,(pos.z/s)*s},
                 (uint){s},
                 octree[i].w
             };

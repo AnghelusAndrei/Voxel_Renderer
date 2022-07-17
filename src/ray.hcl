@@ -12,11 +12,12 @@ struct ray_data{
   uchar3 color;
   float3 position;
   float3 normal;
+  bool hit;
 }; 
 
 
 
-ray_data RayCast(float3 pos, float3 vector, int n, uint4 *octree){
+ray_data RayCast(float3 pos, float3 dest, float3 vector, int n, uint4 *octree, int max_steps){
 
     float3 normal = {0,0,0};
     float3 ray = pos;
@@ -24,12 +25,11 @@ ray_data RayCast(float3 pos, float3 vector, int n, uint4 *octree){
     float3 v_add;
     int3 found = {1,1,1};
     int3 checked = {0,0,0};
-
     int q = 0;
 
-    while(q<50) {
+    while(q<max_steps) {
 
-        int d = 1e9;
+        float d = 1e9;
         float xD,yD,zD;
 
         x=(float3){0,0,0};
@@ -111,7 +111,7 @@ ray_data RayCast(float3 pos, float3 vector, int n, uint4 *octree){
             }
 
             if((found.x == 0 && found.y == 0 && found.z == 0) || (v_add.x == 0 && v_add.y == 0 && v_add.z == 0)){
-                return (ray_data){(uchar3){Gradient((uchar3){0,0,0}, (uchar3){0,0,0}, (vector.z+1)*127)},(float3){-1,0,0},(float3){0,0,0}};
+                return (ray_data){(uchar3){2,0,0},(float3){0,0,0},(float3){0,0,0},false};
             }
  
             ray = ray+v_add;
@@ -123,42 +123,49 @@ ray_data RayCast(float3 pos, float3 vector, int n, uint4 *octree){
             v_add = (float3){0,0,0};
         }
 
+        if(vec3Distance(pos,ray) >= vec3Distance(pos,dest)){
+            return (ray_data){(uchar3){1, 0, 0},(float3){0,0,0},(float3){0,0,0},false};
+        }
 
-        leaf_data leaf = Lookup(ray,octree,n);
+        leaf_data leaf = Lookup(convert_uint3(floor(ray)),octree,n);
 
         if(leaf.type == CUBE){
             return (ray_data){
                 (uchar3){leaf.data.x,leaf.data.y,leaf.data.z},
                 ray,
-                normal
+                normal,
+                true
             };
         }
 
 
-        x.x = (leaf.data.x-ray.x) + (int)(vector.x>=0)*leaf.size + semn(vector.x)*f_error;
+        x.x = (leaf.data.x-ray.x) + (float)(vector.x>0)*leaf.size + semn(vector.x)*f_error;
         x.y = (x.x*vector.y)/vector.x;
         x.z = (x.x*vector.z)/vector.x;
-        xD = vec3Distance(ray,ray+x);
+
+        y.y = (leaf.data.y-ray.y) + (float)(vector.y>0)*leaf.size + semn(vector.y)*f_error;
+        y.x = (y.y*vector.x)/vector.y;
+        y.z = (y.y*vector.z)/vector.y;
+
+        z.z = (leaf.data.z-ray.z) + (float)(vector.z>0)*leaf.size + semn(vector.z)*f_error;
+        z.x = (z.z*vector.x)/vector.z;
+        z.y = (z.z*vector.y)/vector.z;
+
+
+        xD = sqrt(x.x*x.x + x.y*x.y + x.z*x.z);
+        yD = sqrt(y.x*y.x + y.y*y.y + y.z*y.z);
+        zD = sqrt(z.x*z.x + z.y*z.y + z.z*z.z);
+
         if(xD < d){
             d = xD; 
             v_add = x; 
             normal = (float3){-semn(vector.x),0,0};
         }
-
-        y.y = (leaf.data.y-ray.y) + (int)(vector.y>=0)*leaf.size + semn(vector.y)*f_error;
-        y.x = (y.y*vector.x)/vector.y;
-        y.z = (y.y*vector.z)/vector.y;
-        yD = vec3Distance(ray,ray+y);
         if(yD < d){
             d = yD; 
             v_add = y; 
             normal = (float3){0,-semn(vector.y),0};
         }
-
-        z.z = (leaf.data.z-ray.z) + (int)(vector.z>=0)*leaf.size + semn(vector.z)*f_error;
-        z.x = (z.z*vector.x)/vector.z;
-        z.y = (z.z*vector.y)/vector.z;
-        zD = vec3Distance(ray,ray+z);
         if(zD < d){
             d = zD; 
             v_add = z; 
@@ -170,5 +177,5 @@ ray_data RayCast(float3 pos, float3 vector, int n, uint4 *octree){
         q++;
     }
 
-    return (ray_data){(uchar3){0, 255, 0},(float3){-1,0,0},(float3){0,0,0}};
+    return (ray_data){(uchar3){0, 0, 0},(float3){0,0,0},(float3){0,0,0},false};
 }

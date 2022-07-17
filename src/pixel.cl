@@ -9,7 +9,7 @@ const float reflectionCoefficent = 0;
 
 __kernel void compute_pixels_kernel(__global uint4 *map, __global uchar3 *doutput,
                                     const int n, const int FOV,
-                                    const float3 pos, const float3 vec, const int d) {
+                                    const float3 pos, const float3 vec, const float3 light, const int d) {
                                       
     size_t index_x= get_global_id(0);
     size_t index_y = get_global_id(1);
@@ -31,14 +31,17 @@ __kernel void compute_pixels_kernel(__global uint4 *map, __global uchar3 *doutpu
     v_y = PlaneScale.y * normalize(cross(c_y, vec)) * aspectRatio * f;
 
     float3 vector = vec + v_x + v_y;
+    vector = normalize(vector);
     
     ray_data voxel;
-
-    voxel = RayCast(pos,vector,n,map);
+    
+    voxel = RayCast(pos, pos + vector * (float)1e9,vector,n,map,50);
 
     
-    if(voxel.position.x >= 0 && reflectionCoefficent > 0.01){
-        ray_data voxel2;
+    if(voxel.hit){
+
+
+        ray_data voxel2, illumination;
 
         float3 reflection_vec = vector - 2*dot(vector,voxel.normal)*voxel.normal;
         
@@ -49,10 +52,33 @@ __kernel void compute_pixels_kernel(__global uint4 *map, __global uchar3 *doutpu
         };
 
         voxel.position = voxel.position + add_v;
-        voxel2 = RayCast(voxel.position,reflection_vec,n,map);
+        float3 light_vector = normalize(light-voxel.position);
 
-        float3 raw_color = ( (float3){(float)voxel.color.x,(float)voxel.color.y,(float)voxel.color.z} + (float3){(float)voxel2.color.x * reflectionCoefficent,(float)voxel2.color.y * reflectionCoefficent,(float)voxel2.color.z * reflectionCoefficent}) / ( 1 + reflectionCoefficent );
-        doutput[index]=(uchar3)( (uchar)raw_color.x, (uchar)raw_color.y, (uchar)raw_color.z );
+        illumination = RayCast(voxel.position, light, light_vector,n,map,30);
+
+        if(!illumination.hit){
+
+            float lighting = (dot(light_vector, reflection_vec) + 1) / 2 + 1/5;
+            float lDistCoefficent = vec3Distance(voxel.position, light)/5;
+
+            if(reflectionCoefficent > 0.01){
+                voxel2 = RayCast(voxel.position, voxel.position + reflection_vec * (float)1e9, normalize(reflection_vec),n,map,40);
+
+                float3 raw_color = ( (float3){(float)voxel.color.x,(float)voxel.color.y,(float)voxel.color.z} + (float3){(float)voxel2.color.x * reflectionCoefficent,(float)voxel2.color.y * reflectionCoefficent,(float)voxel2.color.z * reflectionCoefficent}) / ( 1 + reflectionCoefficent );
+                uchar3 illuminated_color = Color(raw_color * lighting - lDistCoefficent);
+
+                doutput[index] = illuminated_color;
+            }else{
+                uchar3 illuminated_color = Color(convert_float3(voxel.color) * lighting - lDistCoefficent);
+
+                doutput[index] = illuminated_color;
+            }
+
+        }else{
+            doutput[index] = (uchar3){voxel.color.x/5, voxel.color.y/5, voxel.color.z/5};
+        }
+
+
     }else{
         doutput[index] = voxel.color;
     }
