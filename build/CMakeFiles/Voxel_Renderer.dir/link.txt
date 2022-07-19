@@ -1,1 +1,0 @@
-/usr/bin/c++ -rdynamic CMakeFiles/Voxel_Renderer.dir/src/main.cpp.o -o Voxel_Renderer  -lSDL -lSDL_ttf 

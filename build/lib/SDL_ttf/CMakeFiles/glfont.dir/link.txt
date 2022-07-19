@@ -1,1 +1,0 @@
-/usr/bin/cc CMakeFiles/glfont.dir/glfont.c.o -o glfont  -Wl,-rpath,/home/m245/Desktop/github/Voxel_Renderer/build/lib/SDL_ttf:/home/m245/Desktop/github/Voxel_Renderer/build/lib/SDL /usr/lib/libOpenGL.so libSDL2_ttf-2.0.so.0.2100.0 ../SDL/libSDL2main.a ../SDL/libSDL2-2.0.so.0.2301.0 

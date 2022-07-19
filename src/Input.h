@@ -1,5 +1,5 @@
 #pragma once
-#include "SDL.h"
+#include "SDL2/SDL.h"
 #include <bits/stdc++.h>
 #include "debug.h"
 #include "math.h"
@@ -26,8 +26,8 @@ class CameraHandler{
         bool KEY_D = false;
         bool KEY_SPACE = false;
         bool KEY_SHIFT = false;
+        bool KEY_F = false;
 
-        bool FULLSCREEN = false;
 
         float start_time;
         float end_time;
@@ -68,6 +68,8 @@ class CameraHandler{
         const float PLAYER_SPEED_CONST= 0.00003;
         float PLAYER_SPEED = 0.000003;
         float sensitivity = 0.7;
+        bool FULLSCREEN = false;
+        Vector light;
         cam Camera;
         SDL_Event e;
         
@@ -134,48 +136,26 @@ void CameraHandler::GetPosition(){
 }
 
 void CameraHandler::KeyDown(){
-            if(e.key.keysym.sym == SDLK_w){
-                KEY_W = true;
-            }
-            if(e.key.keysym.sym == SDLK_a){
-                KEY_A = true;
-            }
-            if(e.key.keysym.sym == SDLK_s){
-                KEY_S = true;
-            }
-            if(e.key.keysym.sym == SDLK_d){
-                KEY_D = true;
-            }
-            if(e.key.keysym.sym == 32){
-                KEY_SPACE = true;
-            }
-            if(e.key.keysym.sym == 1073742049){
-                KEY_SHIFT = true;
-            }
+    if(e.key.keysym.sym == SDLK_w) KEY_W = true;
+    if(e.key.keysym.sym == SDLK_a) KEY_A = true;
+    if(e.key.keysym.sym == SDLK_s) KEY_S = true;
+    if(e.key.keysym.sym == SDLK_d) KEY_D = true;
+    if(e.key.keysym.sym == SDLK_d) KEY_D = true;
+    if(e.key.keysym.sym == 32) KEY_SPACE = true;
+    if(e.key.keysym.sym == 1073742049) KEY_SHIFT = true;
+    if(e.key.keysym.sym == SDLK_f && !KEY_F) {KEY_F = true; FULLSCREEN = true;}
+    if(e.key.keysym.sym == SDLK_p) {light = Camera.pos;}
 }
 
 void CameraHandler::KeyUp(){
-            if(e.key.keysym.sym == SDLK_w){
-                KEY_W = false;
-            }
-            if(e.key.keysym.sym == SDLK_a){
-                KEY_A = false;
-            }
-            if(e.key.keysym.sym == SDLK_s){
-                KEY_S = false;
-            }
-            if(e.key.keysym.sym == SDLK_d){
-                KEY_D = false;
-            }
-            if(e.key.keysym.sym == SDLK_d){
-                KEY_D = false;
-            }
-            if(e.key.keysym.sym == 32){
-                KEY_SPACE = false;
-            }
-            if(e.key.keysym.sym == 1073742049){
-                KEY_SHIFT = false;
-            }
+    if(e.key.keysym.sym == SDLK_w) KEY_W = false;
+    if(e.key.keysym.sym == SDLK_a) KEY_A = false;
+    if(e.key.keysym.sym == SDLK_s) KEY_S = false;
+    if(e.key.keysym.sym == SDLK_d) KEY_D = false;
+    if(e.key.keysym.sym == SDLK_d) KEY_D = false;
+    if(e.key.keysym.sym == 32) KEY_SPACE = false;
+    if(e.key.keysym.sym == 1073742049) KEY_SHIFT = false;
+    if(e.key.keysym.sym == SDLK_f && KEY_F) KEY_F = false;
 }
 
 void CameraHandler::MouseMotion(){

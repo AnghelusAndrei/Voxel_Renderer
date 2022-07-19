@@ -3,7 +3,7 @@
 #include "./src/functions.hcl"
 
 
-const float f_error = 0.001;
+const float f_error = 0.0001;
 const float b_error = 0;
 
 

@@ -1,6 +1,6 @@
-#include "SDL.h"
-#include "SDL_mutex.h"
-#include "SDL_ttf.h"
+#include "SDL2/SDL.h"
+#include "SDL2/SDL_mutex.h"
+#include "SDL2/SDL_ttf.h"
 #include <bits/stdc++.h>
 #include <strstream>
 
@@ -10,29 +10,28 @@
 #include "procedural_generation.h"
 #include "renderer.h"
 #include "octree.h"
+#include "model.h"
 
 
 
 int main()
 {
-    console.GetData2D();
-    console.StartTime();
+    console.GetData2D(config);
+    octree.Initialize(config.depth);
+    GenerateOctree2D(octree, config);
 
-    octree.Initialize(console.config.depth);
-    GenerateOctree2D(octree, console.config);
-
-    console.ShowMs();
-
-    light = Vector(octree.n/2, octree.n/2, octree.n/2);
+    Camera.light = Vector(octree.n/2, octree.n/2, config.height);
 
     SDL_AtomicSet(&running, 1);
     SDL_Thread *RenderingThread;
     RenderingThread = SDL_CreateThread(RenderEngine, "render_engine", NULL);
+
     SDL_Event e;
 
-    while (SDL_PollEvent(&e) || true)
+    while (true)
     {
-
+        SDL_PollEvent(&e);
+        
         if (e.type == SDL_QUIT)
         {
             SDL_AtomicSet(&running, 0);

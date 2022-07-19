@@ -2,6 +2,7 @@
 #include <bits/stdc++.h>
 #include "octree.h"
 #include "debug.h"
+#include "config.h"
 
 #ifdef __APPLE__
 #include <OpenCL/opencl.h>

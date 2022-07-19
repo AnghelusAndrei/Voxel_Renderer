@@ -1,6 +1,7 @@
 #include "./src/functions.hcl"
 #include "./src/Data.hcl"
 #include "./src/ray.hcl"
+#include "./src/lighting.hcl"
 
 
 const float reflectionCoefficent = 0;
@@ -38,48 +39,5 @@ __kernel void compute_pixels_kernel(__global uint4 *map, __global uchar3 *doutpu
     voxel = RayCast(pos, pos + vector * (float)1e9,vector,n,map,50);
 
     
-    if(voxel.hit){
-
-
-        ray_data voxel2, illumination;
-
-        float3 reflection_vec = vector - 2*dot(vector,voxel.normal)*voxel.normal;
-        
-        float3 add_v = {
-            voxel.normal.x*f_error*2, 
-            voxel.normal.y*f_error*2, 
-            voxel.normal.z*f_error*2
-        };
-
-        voxel.position = voxel.position + add_v;
-        float3 light_vector = normalize(light-voxel.position);
-
-        illumination = RayCast(voxel.position, light, light_vector,n,map,30);
-
-        if(!illumination.hit){
-
-            float lighting = (dot(light_vector, reflection_vec) + 1) / 2 + 1/5;
-            float lDistCoefficent = vec3Distance(voxel.position, light)/5;
-
-            if(reflectionCoefficent > 0.01){
-                voxel2 = RayCast(voxel.position, voxel.position + reflection_vec * (float)1e9, normalize(reflection_vec),n,map,40);
-
-                float3 raw_color = ( (float3){(float)voxel.color.x,(float)voxel.color.y,(float)voxel.color.z} + (float3){(float)voxel2.color.x * reflectionCoefficent,(float)voxel2.color.y * reflectionCoefficent,(float)voxel2.color.z * reflectionCoefficent}) / ( 1 + reflectionCoefficent );
-                uchar3 illuminated_color = Color(raw_color * lighting - lDistCoefficent);
-
-                doutput[index] = illuminated_color;
-            }else{
-                uchar3 illuminated_color = Color(convert_float3(voxel.color) * lighting - lDistCoefficent);
-
-                doutput[index] = illuminated_color;
-            }
-
-        }else{
-            doutput[index] = (uchar3){voxel.color.x/5, voxel.color.y/5, voxel.color.z/5};
-        }
-
-
-    }else{
-        doutput[index] = voxel.color;
-    }
+    doutput[index] = Color(CalculateLighting(vector, voxel, light, reflectionCoefficent, n, map));
 }
