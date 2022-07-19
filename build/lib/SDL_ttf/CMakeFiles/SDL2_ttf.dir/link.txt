@@ -1,0 +1,1 @@
+/usr/bin/cc -fPIC -shared -Wl,-soname,libSDL2_ttf-2.0.so.0 -o libSDL2_ttf-2.0.so.0.2100.0 CMakeFiles/SDL2_ttf.dir/SDL_ttf.c.o  -Wl,-rpath,/home/m245/Desktop/github/Voxel_Renderer/build/lib/SDL: ../SDL/libSDL2-2.0.so.0.2301.0 /usr/lib/libfreetype.so 
