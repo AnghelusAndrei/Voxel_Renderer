@@ -16,7 +16,7 @@
 
 ### Building
 ```
-git clone --recursive https://github.com/https://github.com/MegaSomething/Voxel_Renderer.git
+git clone --recursive https://github.com/MegaSomething/Voxel_Renderer.git
 cd Voxel_Renderer
 git submodule update --init --recursive
 
