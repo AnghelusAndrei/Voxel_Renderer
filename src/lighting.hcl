@@ -1,8 +1,8 @@
 #pragma once
 
-#include "./src/functions.hcl"
-#include "./src/Data.hcl"
-#include "./src/ray.hcl"
+#include "shd/functions.hcl"
+#include "shd/Data.hcl"
+#include "shd/ray.hcl"
 
 const float shadowCoefficent = 0.4;
 

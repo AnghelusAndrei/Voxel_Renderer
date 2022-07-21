@@ -1,7 +1,7 @@
-#include "./src/functions.hcl"
-#include "./src/Data.hcl"
-#include "./src/ray.hcl"
-#include "./src/lighting.hcl"
+#include "shd/functions.hcl"
+#include "shd/Data.hcl"
+#include "shd/ray.hcl"
+#include "shd/lighting.hcl"
 
 
 const float reflectionCoefficent = 0;

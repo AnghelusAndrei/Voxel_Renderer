@@ -16,7 +16,7 @@
 #endif
 #include <sys/stat.h>
 
-#define PROGRAM_FILE "./src/pixel.cl"
+#define PROGRAM_FILE "shd/pixel.cl"
 #define FONT_FILE "./assets/font.ttf"
 #define KERNEL_FUNC "compute_pixels_kernel"
 

@@ -1,6 +1,6 @@
 #pragma once
-#include "./src/Data.hcl"
-#include "./src/functions.hcl"
+#include "shd/Data.hcl"
+#include "shd/functions.hcl"
 
 
 const float f_error = 0.0001;
