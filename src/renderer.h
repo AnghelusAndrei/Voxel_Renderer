@@ -1,6 +1,6 @@
 #pragma once
-#include "SDL2/SDL.h"
-#include "SDL2/SDL_mutex.h"
+#include "SDL.h"
+#include "SDL_mutex.h"
 #include "SDL_ttf.h"
 #include <bits/stdc++.h>
 #include <strstream>

@@ -1,20 +1,25 @@
 cmake_minimum_required(VERSION 3.7)
 project(Voxel_Renderer VERSION 1.0) 
+
 set(CXX_STANDARD 11)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+
 
 #set(CMAKE_BUILD_TYPE Debug)
 if ( ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR} )
     message( FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there. You may need to remove CMakeCache.txt." )
 endif()
 
-add_subdirectory(lib/SDL)
 add_subdirectory(lib/SDL_ttf)
 add_executable(${PROJECT_NAME} src/main.cpp)
 
+find_package(SDL2 REQUIRED)
 find_package(OpenCL REQUIRED)
+
+include_directories(${SDL2_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} OpenCL::OpenCL)
 
-target_include_directories(${PROJECT_NAME} PUBLIC lib/SDL/include)
 target_include_directories(${PROJECT_NAME} PUBLIC lib/SDL_ttf)
 target_include_directories(${PROJECT_NAME} PUBLIC lib/PerlinNoise)
 target_link_libraries(${PROJECT_NAME} SDL SDL_ttf )

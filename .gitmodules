@@ -1,6 +1,3 @@
-[submodule "lib/SDL"]
-	path = lib/SDL
-	url = https://github.com/libsdl-org/SDL.git
 [submodule "lib/PerlinNoise"]
 	path = lib/PerlinNoise
 	url = https://github.com/Reputeless/PerlinNoise.git
