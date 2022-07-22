@@ -132,10 +132,10 @@ static int RenderEngine(void *data){
         end_time = SDL_GetTicks();
 
 
-        console.add_data("MS", (end_time-start_time), font, renderer);
+        /*console.add_data("MS", (end_time-start_time), font, renderer);
         console.add_data("FPS", 1000/(end_time-start_time), font, renderer);
         console.add_data("OCTREE_LENGTH", OCTREE_INDEX, font, renderer);
-        console.update();
+        console.update();*/
 
         SDL_RenderPresent(renderer);
 

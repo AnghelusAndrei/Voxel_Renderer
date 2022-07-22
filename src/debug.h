@@ -7,10 +7,10 @@
 class Debug{
     private:
         float start_time;
-        int num_data = 0;
 
     public:
         int RenderStatus;
+        int num_data = 0;
 
 
         void GetData3D(config_ &config){

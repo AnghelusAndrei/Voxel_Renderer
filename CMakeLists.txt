@@ -35,9 +35,8 @@ ELSE()
     find_package(SDL2 REQUIRED)
     find_package(OpenCL REQUIRED)
 
-    include_directories(${SDL2_INCLUDE_DIRS} ${SDL_TTF_INCLUDE_DIRS})
-    target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL_TTF_LIBRARIES})
-    target_link_libraries(${PROJECT_NAME} OpenCL::OpenCL)
+    include_directories(${SDL2_INCLUDE_DIRS} ${SDL_TTF_INCLUDE_DIRS} ${OpenCL_INCLUDE_DIRS})
+    target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL_TTF_LIBRARIES} ${OpenCL_LIBRARIES})
 ENDIF()
 
 
