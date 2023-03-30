@@ -1,5 +1,5 @@
 #pragma once
-#include "PerlinNoise.hpp"
+#include "../utils/PerlinNoise.hpp"
 
 struct config_{
     int SCREEN_HEIGHT;

@@ -1,5 +1,5 @@
 #pragma once
-#include "PerlinNoise.hpp"
+#include "../utils/PerlinNoise.hpp"
 #include "config.h"
 
 
@@ -7,24 +7,32 @@
 class Debug{
     private:
         float start_time;
+        int num_data = 0;
 
     public:
         int RenderStatus;
-        int num_data = 0;
+        int PhysicsStatus;
 
+        int FPS;
+        int TPS;
+
+        int FMS;
+        int TMS;
 
         void GetData3D(config_ &config){
             std::cout<<"Please insert a seed value: "; std::cin>>config.seed;
             std::cout<<"Please insert the number of noise octaves (must be between 1 and 10): "; std::cin>>config.octaves;
             std::cout<<"Please insert a density value (must be between 0 and 255): "; std::cin>>config.density;
-            std::cout<<"Please insert a depth value (must be between 0 and 10): "; std::cin>>config.depth;
         }
 
         void GetData2D(config_ &config){
             std::cout<<"Please insert a seed value: "; std::cin>>config.seed;
             std::cout<<"Please insert the number of noise octaves (must be between 1 and 10): "; std::cin>>config.octaves;
             std::cout<<"Please insert a height value (must be between 50 and 250): "; std::cin>>config.height;
-            std::cout<<"Please insert a depth value (must be between 0 and 10): "; std::cin>>config.depth;
+        }
+
+        void GetOctree(config_ &config){
+            std::cout<<"Please insert a depth value: "; std::cin>>config.depth;
         }
 
         void StartTime();

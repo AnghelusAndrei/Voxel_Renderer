@@ -13,7 +13,7 @@
 
 class Vector{
     public:
-        float x,y,z;
+        float x,y,z,w;
         Vector(){
             x=0;
             y=0;
@@ -28,6 +28,8 @@ class Vector{
         Vector(const Vector &vec);
         void EulerAngles(cl_float2 rotation);
         cl_float3 CL();
+        cl_uint3 CL_ui();
+        void out();
 
 
         Vector operator+(const Vector &vec);
@@ -66,6 +68,13 @@ cl_float3 Vector::CL(){
     return (cl_float3){x,y,z};
 }
 
+cl_uint3 Vector::CL_ui(){
+    return (cl_uint3){x,y,z};
+}
+
+void Vector::out(){
+    std::cout<<x<<' '<<y<<' '<<z<<' '<<std::endl;
+}
 
 
 Vector Vector::operator+(const Vector &vec)
@@ -163,7 +172,7 @@ float Vector::square()
 
 Vector Vector:: normalization()
 {
-    assert(magnitude()!=0);
+    if(magnitude()==0)return *this;
     *this/=magnitude();
     return *this;
 }

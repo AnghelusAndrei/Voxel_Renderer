@@ -1,13 +1,17 @@
 #pragma once
-#include "SDL.h"
-#include "SDL_mutex.h"
-#include "SDL_ttf.h"
+#include "SDL2/SDL.h"
+#include "SDL2/SDL_image.h"
+#include "SDL2/SDL_mutex.h"
+#include "SDL2/SDL_ttf.h"
+
 #include <bits/stdc++.h>
 #include <strstream>
+
 #include "Cl_utils.h"
-#include "Input.h"
-#include "procedural_generation.h"
+#include "./Input.h"
 #include "config.h"
+#include "octree.h"
+#include "channels.h"
 
 #ifdef __APPLE__
 #include <OpenCL/opencl.h>
@@ -16,7 +20,7 @@
 #endif
 #include <sys/stat.h>
 
-#define PROGRAM_FILE "shd/pixel.cl"
+#define PROGRAM_FILE "./src/cl/pixel.cl"
 #define FONT_FILE "./assets/font.ttf"
 #define KERNEL_FUNC "compute_pixels_kernel"
 
@@ -28,16 +32,22 @@ config_ config {
     .FOV = 90
 };
 
+bool physics_ready = false;
+
 SDL_atomic_t running;
 
 Octree octree;
 Debug console;
 CameraHandler Camera;
 
-
+properties voxel_data;
 
 
 static int RenderEngine(void *data){
+
+    while (!physics_ready){SDL_Delay(100);}
+
+
     double start_time = SDL_GetTicks();
 
     SDL_Window *window;
@@ -55,10 +65,10 @@ static int RenderEngine(void *data){
     cl_program program;
     cl_kernel kernel;
     cl_command_queue queue;
-    cl_int err,n_mem=octree.n;
+    cl_int err,n_mem=octree.n,l_mem=voxel_data.index_lights;
     size_t global_size[3] = {config.res_x, config.res_y, 0};
 
-    cl_mem ddata, doutput;
+    cl_mem ddata, doutput, dproperties, dlights;
 
     device = create_device();
     context = clCreateContext(NULL, 1, &device, NULL, NULL, &err);
@@ -66,21 +76,23 @@ static int RenderEngine(void *data){
     program = build_program(context, device, PROGRAM_FILE);
     queue = clCreateCommandQueue(context, device, 0, &err);
 
-    ddata = clCreateBuffer(context, CL_MEM_READ_ONLY, (size_t)(OCTREE_INDEX)*sizeof(cl_uint4), NULL, &err); CheckErr(err);
+    dproperties = clCreateBuffer(context, CL_MEM_READ_ONLY, (size_t)(voxel_data.index_materials)*sizeof(cl_int8), NULL, &err); CheckErr(err);
+    dlights = clCreateBuffer(context, CL_MEM_READ_ONLY, (size_t)(voxel_data.index_lights)*sizeof(cl_float8), NULL, &err); CheckErr(err);
     doutput = clCreateBuffer(context, CL_MEM_WRITE_ONLY, config.res_y*config.res_x*sizeof(cl_uchar3), NULL, &err); CheckErr(err);
 
-    err = clEnqueueWriteBuffer(queue, ddata, CL_TRUE, 0,(size_t)(OCTREE_INDEX)*sizeof(cl_uint4), octree.octree, 0, NULL, NULL); CheckErr(err);
+    err = clEnqueueWriteBuffer(queue, dproperties, CL_TRUE, 0,(size_t)(voxel_data.index_materials)*sizeof(cl_int8), voxel_data.data, 0, NULL, NULL); CheckErr(err);
+    err = clEnqueueWriteBuffer(queue, dlights, CL_TRUE, 0,(size_t)(voxel_data.index_lights)*sizeof(cl_float8), voxel_data.lights, 0, NULL, NULL); CheckErr(err);
     kernel = clCreateKernel(program, KERNEL_FUNC, &err);
 
     cl_int2 res = {config.res_x,config.res_y};
     cl_float3 light_cl = Camera.light.CL();
 
-    err = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&ddata); CheckErr(err);// <=====INPUT
+    cl_int4 data_config = {n_mem, config.FOV, config.depth, l_mem};
+
     err = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&doutput); CheckErr(err);// <=====OUTPUT
-    err = clSetKernelArg(kernel, 2, sizeof(cl_int), (void *)&n_mem); CheckErr(err);
-    err = clSetKernelArg(kernel, 3, sizeof(cl_int), (void *)&config.FOV); CheckErr(err);
-    err = clSetKernelArg(kernel, 7, sizeof(cl_int), (void *)&config.depth); CheckErr(err);
-    err = clSetKernelArg(kernel, 6, sizeof(cl_float3), (void *)&light_cl); CheckErr(err);
+    err = clSetKernelArg(kernel, 2, sizeof(cl_int4), (void *)&data_config); CheckErr(err);
+    err = clSetKernelArg(kernel, 5, sizeof(cl_mem), (void *)&dproperties); CheckErr(err);
+    err = clSetKernelArg(kernel, 6, sizeof(cl_mem), (void *)&dlights); CheckErr(err);
 
     TTF_Init();
     TTF_Font * font = TTF_OpenFont(FONT_FILE, 50);
@@ -88,7 +100,7 @@ static int RenderEngine(void *data){
     double end_time = SDL_GetTicks();
     std::cout<<"Initialized all data in "<<end_time-start_time<<" ms"<<std::endl;
 
-    cl_uchar3* houtput = nullptr;
+    cl_uchar3* houtput;
     SDL_Texture* SCREEN = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, config.res_x, config.res_y);
 
     while (SDL_AtomicGet(&running))
@@ -112,9 +124,17 @@ static int RenderEngine(void *data){
         cl_float3 pos = Camera.Camera.pos.CL();
         cl_float3 vec = Camera.Camera.vector.CL();
 
-        err = clSetKernelArg(kernel, 4, sizeof(cl_float3), (void *)&pos); CheckErr(err);
-        err = clSetKernelArg(kernel, 5, sizeof(cl_float3), (void *)&vec); CheckErr(err);
-        
+        err = clSetKernelArg(kernel, 3, sizeof(cl_float3), (void *)&pos); CheckErr(err);
+        err = clSetKernelArg(kernel, 4, sizeof(cl_float3), (void *)&vec); CheckErr(err);
+
+        if(!octree.upToDate){
+            ddata = clCreateBuffer(context, CL_MEM_READ_ONLY, (size_t)(OCTREE_INDEX)*sizeof(cl_uint4), NULL, &err); CheckErr(err);
+            err = clEnqueueWriteBuffer(queue, ddata, CL_TRUE, 0,(size_t)(OCTREE_INDEX)*sizeof(cl_uint4), octree.octree, 0, NULL, NULL); CheckErr(err);
+            err = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&ddata); CheckErr(err);
+
+            octree.upToDate = true;
+        }
+
 
         //rendering
         int pitch = 0;
@@ -132,10 +152,17 @@ static int RenderEngine(void *data){
         end_time = SDL_GetTicks();
 
 
-        /*console.add_data("MS", (end_time-start_time), font, renderer);
-        console.add_data("FPS", 1000/(end_time-start_time), font, renderer);
+        console.FMS = (end_time-start_time);
+        console.FPS = 1000/(end_time-start_time);
+
+
+        console.add_data("FMS", console.FMS, font, renderer);
+        console.add_data("TMS", console.TMS, font, renderer);
+        console.add_data("FPS", console.FPS, font, renderer);
+        console.add_data("TPS", console.TPS, font, renderer);
         console.add_data("OCTREE_LENGTH", OCTREE_INDEX, font, renderer);
-        console.update();*/
+        console.add_data("OCTREE_upToDate", octree.upToDate, font, renderer);
+        console.update();
 
         SDL_RenderPresent(renderer);
 
